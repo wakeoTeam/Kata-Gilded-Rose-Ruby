@@ -1,6 +1,8 @@
 class GildedRose
   attr_reader :name, :days_remaining, :quality
 
+  MAX_QUALITY = 50
+
   def initialize(name:, days_remaining:, quality:)
     @name = name
     @days_remaining = days_remaining
@@ -8,51 +10,58 @@ class GildedRose
   end
 
   def tick
-    if @name != "Aged Brie" and @name != "Backstage passes to a TAFKAL80ETC concert"
+    if !aged_brie? and !backstage?
       if @quality > 0
         if !sulfura?
-          @quality = @quality - 1
+          @quality -= 1
         end
       end
     else
-      if @quality < 50
-        @quality = @quality + 1
-        if @name == "Backstage passes to a TAFKAL80ETC concert"
+      if !max_quality_reached?
+        @quality += 1
+        if backstage?
           if @days_remaining < 11
-            if @quality < 50
-              @quality = @quality + 1
+            if !max_quality_reached?
+              @quality += 1
             end
           end
           if @days_remaining < 6
-            if @quality < 50
-              @quality = @quality + 1
+            if !max_quality_reached?
+              @quality += 1
             end
           end
         end
       end
     end
+
     if !sulfura?
-      @days_remaining = @days_remaining - 1
+      @days_remaining -= 1
     end
+
     if @days_remaining < 0
-      if @name != "Aged Brie"
-        if @name != "Backstage passes to a TAFKAL80ETC concert"
+      if !aged_brie?
+        if !backstage?
           if @quality > 0
             if !sulfura?
-              @quality = @quality - 1
+              @quality -= 1
             end
           end
         else
-          @quality = @quality - @quality
+          @quality = 0
         end
       else
-        if @quality < 50
-          @quality = @quality + 1
+        if !max_quality_reached?
+          @quality += 1
         end
       end
     end
   end
 
-private
-def sulfura? = @name == "Sulfuras, Hand of Ragnaros"
+  private
+
+  def sulfura? = @name == "Sulfuras, Hand of Ragnaros"
+  def aged_brie? = @name == "Aged Brie"
+  def backstage? = @name == "Backstage passes to a TAFKAL80ETC concert"
+
+  def max_quality_reached? = @quality == MAX_QUALITY
 end
