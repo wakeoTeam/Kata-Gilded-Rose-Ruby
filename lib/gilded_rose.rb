@@ -2,6 +2,10 @@ class GildedRose
   attr_reader :name, :days_remaining, :quality
 
   MAX_QUALITY = 50
+  MIN_QUALITY = 0
+  SELL_DATE = 0
+  LONG_BEFORE_SELL_DATE_THRESHOLD = 11
+  MEDIUM_CLOSE_TO_SELL_DATE_THRESHOLD = 6
 
   def initialize(name:, days_remaining:, quality:)
     @name = name
@@ -11,7 +15,7 @@ class GildedRose
 
   def tick
     if !aged_brie? and !backstage?
-      if @quality > 0
+      if !min_quality_reached?
         if !sulfura?
           @quality -= 1
         end
@@ -20,12 +24,12 @@ class GildedRose
       if !max_quality_reached?
         @quality += 1
         if backstage?
-          if @days_remaining < 11
+          if @days_remaining < LONG_BEFORE_SELL_DATE_THRESHOLD
             if !max_quality_reached?
               @quality += 1
             end
           end
-          if @days_remaining < 6
+          if @days_remaining < MEDIUM_CLOSE_TO_SELL_DATE_THRESHOLD
             if !max_quality_reached?
               @quality += 1
             end
@@ -38,10 +42,10 @@ class GildedRose
       @days_remaining -= 1
     end
 
-    if @days_remaining < 0
+    if after_sell_date?
       if !aged_brie?
         if !backstage?
-          if @quality > 0
+          if !min_quality_reached?
             if !sulfura?
               @quality -= 1
             end
@@ -64,4 +68,6 @@ class GildedRose
   def backstage? = @name == "Backstage passes to a TAFKAL80ETC concert"
 
   def max_quality_reached? = @quality == MAX_QUALITY
+  def min_quality_reached? = @quality == MIN_QUALITY
+  def after_sell_date? = @days_remaining < SELL_DATE
 end
