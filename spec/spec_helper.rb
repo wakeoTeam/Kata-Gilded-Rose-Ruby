@@ -20,3 +20,19 @@ RSpec.configure do |config|
   config.order = :random
   Kernel.srand config.seed
 end
+
+SimpleCov.start do
+  add_filter '/spec/'
+  add_filter '/bin/'
+  # add_filter '/vendor/'
+  #
+  add_group 'Lib', 'lib'
+  # add_group 'Models', 'app/models'
+  # add_group 'Helpers', 'app/helpers'
+  # add_group 'Mailers', 'app/mailers'
+end
+# OPTIONAL
+# This outputs the report to your public folder
+# You will want to add this to .gitignore
+SimpleCov.coverage_dir 'public/coverage'
+
